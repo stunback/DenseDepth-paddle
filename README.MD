@@ -33,7 +33,12 @@ evaluate_benchmark.py  精度评估代码
 python train.py  
  
 ## 精度评估   
-python evaluate_benchmark.py
+python evaluate_benchmark.py   
+
+本地评估结果  
+       a1,         a2,         a3,        rel,        rms,     log_10  
+     0.895,      0.981,      0.995,      0.106,      0.456,      0.044
+
 
 ## 实际深度估计效果测试
 把需要测试的图片添加到examples/中   
