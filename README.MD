@@ -3,6 +3,38 @@ This is a project to reproduce DenseDepth using paddlepaddle.
 
 飞桨论文复现挑战赛（第四期）  
 论文题序号5   
-High Quality Monocular Depth Estimation via Transfer Learning    
-的 Paddle2.1 实现   
+
+High Quality Monocular Depth Estimation via Transfer Learning    的 Paddle2.1 实现   
+
+# 使用说明   
+## 环境要求  
+AIStudio 默认的环境就行  
+paddlepaddle-gpu>=2.0  
+pillow  
+opencv  
+
+## 训练好的模型  
+由于模型比较大，因此放在百度网盘中，链接如下：  
+链接：https://pan.baidu.com/s/1f1lYptz3xVMs3mJKvVgrUw   
+提取码：as0z   
+
+## 数据集   
+将DenseDepth作者给出的nyu_data.zip数据集放在本repo的dataset/下  
+原数据集链接：https://drive.google.com/drive/folders/1TzwfNA5JRFTPO-kHMU___kILmOEodoBo?usp=sharing
+
+## 代码  
+train.py 训练代码  
+
+test.py  测试代码  
+
+evaluate_benchmark.py  精度评估代码 
+
+## 训练方法
+python train.py  
  
+## 精度评估   
+python evaluate_benchmark.py
+
+## 实际深度估计效果测试
+把需要测试的图片添加到examples/中   
+python test.py
