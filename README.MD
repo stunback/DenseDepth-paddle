@@ -27,13 +27,13 @@ train.py 训练代码
 
 test.py  测试代码  
 
-evaluate_benchmark.py  精度评估代码 
+evaluate.py  精度评估代码 
 
 ## 训练方法
 python train.py  
  
 ## 精度评估   
-python evaluate_benchmark.py   
+python evaluate.py   
 
 本地评估结果  
        a1,         a2,         a3,        rel,        rms,     log_10  
