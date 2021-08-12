@@ -19,7 +19,7 @@ opencv
 提取码：as0z   
 
 ## 数据集   
-将DenseDepth作者给出的nyu_data.zip数据集放在本repo的dataset/下  
+将DenseDepth作者给出的数据集放在本repo的dataset/下  
 原数据集链接：https://drive.google.com/drive/folders/1TzwfNA5JRFTPO-kHMU___kILmOEodoBo?usp=sharing
 
 ## 代码  
