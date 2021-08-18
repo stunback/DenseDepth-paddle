@@ -17,6 +17,9 @@ opencv
 由于模型比较大，因此放在百度网盘中，链接如下：  
 链接：https://pan.baidu.com/s/1f1lYptz3xVMs3mJKvVgrUw   
 提取码：as0z   
+预训练模型链接如下：     
+链接：https://pan.baidu.com/s/1jYssvJOE7I4t7Dq17acD8g       
+提取码：rkr9      
 
 ## 数据集   
 将DenseDepth作者给出的数据集放在本repo的dataset/下  
