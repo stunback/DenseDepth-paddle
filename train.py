@@ -37,11 +37,6 @@ def main(args):
     model = DensDepthModel()
     optimizer = paddle.optimizer.Adam(parameters=model.parameters(), learning_rate=lr)
 
-    model_state_dict = paddle.load('./logs/DenseDepth_val_best_11.pdparams')
-    opt_state_dict = paddle.load('./logs/Adam_val_best_11.pdopt')
-    model.set_state_dict(model_state_dict)
-    optimizer.set_state_dict(opt_state_dict)
-
     traindataset, valdataset = getTrainingTestingDataset()
     train_loader = paddle.io.DataLoader(traindataset, batch_size=bs)
     val_loader = paddle.io.DataLoader(valdataset, batch_size=bs)

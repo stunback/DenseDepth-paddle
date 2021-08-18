@@ -17,9 +17,10 @@ opencv
 由于模型比较大，因此放在百度网盘中，链接如下：  
 链接：https://pan.baidu.com/s/1f1lYptz3xVMs3mJKvVgrUw   
 提取码：as0z   
-预训练模型链接如下：     
-链接：https://pan.baidu.com/s/1jYssvJOE7I4t7Dq17acD8g       
-提取码：rkr9      
+## 预训练模型
+densenet预模型链接如下：     
+链接：https://pan.baidu.com/s/1KUPnjUgpG40VSDLBHEcRIQ    
+提取码：zid4   
 
 ## 数据集   
 将DenseDepth作者给出的数据集放在本repo的dataset/下  
@@ -33,7 +34,8 @@ test.py  测试代码
 evaluate.py  精度评估代码 
 
 ## 训练方法
-python train.py  
+由densenet迁移学习，将densenet预训练模型放在weights/中，然后开始训练：     
+python train.py     
  
 ## 精度评估   
 python evaluate.py   
