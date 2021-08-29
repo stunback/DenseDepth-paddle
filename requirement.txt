@@ -1,0 +1,2 @@
+paddlepaddle-gpu==2.1
+tensorboardX

@@ -35,6 +35,9 @@ def parse_arguments():
 
 
 def compute_errors(gt, pred):
+    '''
+    计算depth predict与gt之间的误差值,如δ阈值准确率，rmse等
+    '''
     thresh = paddle.maximum((gt / pred), (pred / gt)).numpy()
     a1 = (thresh < 1.25).mean()
     a2 = (thresh < 1.25 ** 2).mean()
@@ -47,11 +50,13 @@ def compute_errors(gt, pred):
 
 
 def main(args):
+    # 加载Densedepth模型
     model = DensDepthModel()
     model_state_dict = paddle.load(args.checkpoint)
     model.set_state_dict(model_state_dict)
     model.eval()
 
+    # 加载nyu数据集
     testset = getTestingDataset()
 
     preds = paddle.zeros([len(testset), 240, 320], dtype=paddle.float32)
@@ -59,13 +64,16 @@ def main(args):
     paddle.set_device('gpu')
     for i in range(len(testset)):
         print(i)
+        # 根据RGB与左右翻转RGB进行predict，获得depth和翻转depth predict
         depth_pred = DepthNorm(model(paddle.unsqueeze(testset[i]['image'], axis=0)))[0][0]
         depth_pred_flip = DepthNorm(model(paddle.unsqueeze(testset[i]['image'][:, :, ::-1], axis=0)))[0][0]
         depth_gt = testset[i]['depth'][0]
+        # 将predict结果merge
         depth_pred_merge = depth_pred * 0.5 + paddle.flip(depth_pred_flip, axis=-1) * 0.5
         del depth_pred
         del depth_pred_flip
         # Scaled
+        # 将groundtruth depth与predict depth进行scale，然后将gt与pred保存到用于计算误差的tensor中
         scaled = paddle.mean(depth_gt) / paddle.mean(depth_pred_merge)
         preds[i] = depth_pred_merge * scaled
         gts[i] = depth_gt
@@ -76,7 +84,7 @@ def main(args):
 
     predictions = paddle.clip(preds, 40, 1000) / 100.
     groundtruths = paddle.clip(gts, 40, 1000) / 100.
-    # Eigen crop
+    # 根据Eigen crop进行误差计算
     e = compute_errors(groundtruths[:, 12:225, 15:310], predictions[:, 12:225, 15:310])
     print("{:>10}, {:>10}, {:>10}, {:>10}, {:>10}, {:>10}".format('a1', 'a2', 'a3', 'rel', 'rms', 'log_10'))
     print("{:10.3f}, {:10.3f}, {:10.3f}, {:10.3f}, {:10.3f}, {:10.3f}".format(e[0], e[1], e[2], e[3][0], e[4][0], e[5][0]))

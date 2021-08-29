@@ -41,6 +41,7 @@ def parse_arguments():
 def main(args):
     if len(args.checkpoint) and not os.path.isfile(args.checkpoint):
         raise FileNotFoundError("{} no such file".format(args.checkpoint))
+    # 加载模型
     model = DensDepthModel()
     model_state_dict = paddle.load(args.checkpoint)
     model.set_state_dict(model_state_dict)
@@ -56,11 +57,15 @@ def main(args):
         savepath = os.path.join('./results', filename)
         print("processing image {}".format(filepath))
         img = load_images(filepath)
+        # 图片转tensor
         img = paddle.to_tensor(img)
+        # 预测深度
         pred = model(img)
-
+        # 深度标准化
         out = DepthNorm(pred.squeeze(0))
+        # 预测结果上色
         output = colorize(out, cmap=args.cmap)
+        # 保存结果
         cv2.imwrite(savepath, np.transpose(output, (1, 2, 0)))
 
 

@@ -42,6 +42,9 @@ __all__ = list(MODEL_URLS.keys())
 
 
 class BNACConvLayer(nn.Layer):
+    '''
+    Conv + BatchNorm + Activation
+    '''
     def __init__(self,
                  num_channels,
                  num_filters,
@@ -78,6 +81,9 @@ class BNACConvLayer(nn.Layer):
 
 
 class DenseLayer(nn.Layer):
+    '''
+    Dense连接层
+    '''
     def __init__(self, num_channels, growth_rate, bn_size, dropout, name=None):
         super(DenseLayer, self).__init__()
         self.dropout = dropout
@@ -111,6 +117,9 @@ class DenseLayer(nn.Layer):
 
 
 class DenseBlock(nn.Layer):
+    '''
+    Dense块结构
+    '''
     def __init__(self,
                  num_channels,
                  num_layers,
@@ -144,6 +153,9 @@ class DenseBlock(nn.Layer):
 
 
 class TransitionLayer(nn.Layer):
+    '''
+    DenseNet中的transition结构
+    '''
     def __init__(self, num_channels, num_output_features, name=None):
         super(TransitionLayer, self).__init__()
 
@@ -164,6 +176,9 @@ class TransitionLayer(nn.Layer):
 
 
 class ConvBNLayer(nn.Layer):
+    '''
+    Conv + BN
+    '''
     def __init__(self,
                  num_channels,
                  num_filters,
@@ -199,6 +214,9 @@ class ConvBNLayer(nn.Layer):
 
 
 class DenseNet(nn.Layer):
+    '''
+    DenseNet网络结构
+    '''
     def __init__(self, layers=60, bn_size=4, dropout=0, class_num=1000):
         super(DenseNet, self).__init__()
 

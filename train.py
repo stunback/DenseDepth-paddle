@@ -44,9 +44,11 @@ def main(args):
     epochs = args.epochs
     lr = args.lr
     bs = args.bs
+
+    # 加载Densedepth模型，Adam优化器
     model = DensDepthModel()
     optimizer = paddle.optimizer.Adam(parameters=model.parameters(), learning_rate=lr)
-
+    # 加载训练集和验证集
     traindataset, valdataset = getTrainingTestingDataset()
     train_loader = paddle.io.DataLoader(traindataset, batch_size=bs)
     val_loader = paddle.io.DataLoader(valdataset, batch_size=bs)
@@ -68,8 +70,11 @@ def main(args):
         end = time.time()
         model.train()
         for i, sampled_batch in enumerate(train_loader):
+            # train
+            # 预测depth
             depth_pred = model(sampled_batch['image'])
             depth_gt = DepthNorm(sampled_batch['depth'])
+            # 计算predict与gt的loss
             loss = all_loss(depth_gt, depth_pred, theta=1.0)
             losses.update(float(loss[0]), sampled_batch['image'].shape[0])
 
@@ -77,6 +82,7 @@ def main(args):
             optimizer.step()
             optimizer.clear_grad()
 
+            # 计算训练时间
             batch_time.update(time.time() - end)
             end = time.time()
             eta = str(datetime.timedelta(seconds=int(batch_time.val * (N - i))))
@@ -94,6 +100,7 @@ def main(args):
                 writer.add_scalar('Train/Loss', losses.val, niter)
             writer.add_scalar('Train/Loss.avg', losses.avg, epoch)
 
+            # validation
             if i % 2400 == 0 :
                 model.eval()
                 val_start = time.time()
