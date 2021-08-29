@@ -1,6 +1,21 @@
-import time
+#encoding=utf8
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 import argparse
-import datetime
+import configparser
 import os
 
 import paddle
@@ -9,16 +24,15 @@ import paddle.nn.utils
 import cv2
 import numpy as np
 
-from model import DensDepthModel
-from data import getTrainingTestingDataset
-from utils import AverageMeter, DepthNorm, colorize, load_images
+from model.model import DensDepthModel
+from utils.utils import DepthNorm, colorize, load_images
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Test the model that has been trained")
-    parser.add_argument("--checkpoint", "-c", type=str, default='./weights/DenseDepth_best.pdparams',
+    parser.add_argument("--checkpoint", "-c", type=str, default='./logs/DenseDepth_val_best.pdparams',
                         help="path to checkpoint")
-    parser.add_argument("--data", type=str, default="examples/", help="Path to dataset zip file")
+    parser.add_argument("--data", type=str, default="images/", help="Path to dataset zip file")
     parser.add_argument("--cmap", type=str, default="gray", help="Colormap to be used for the predictions")
     args = parser.parse_args()
     return args
@@ -52,4 +66,10 @@ def main(args):
 
 if __name__ == '__main__':
     args = parse_arguments()
+    cfg = configparser.ConfigParser()
+    cfg.read('configs/main.cfg')
+    args.checkpoint = cfg.get('predict', 'weights_path')
+    args.data = cfg.get('predict', 'imagedir_path')
+    args.cmap = cfg.get('predict', 'color_map')
+
     main(args)

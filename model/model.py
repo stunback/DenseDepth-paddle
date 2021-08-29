@@ -1,15 +1,33 @@
+#encoding=utf8
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
-import numpy as np
 
-from densenet import DenseNet169
+from model.densenet import DenseNet169
 
 
 class Encoder(paddle.nn.Layer):
+    '''
+    DenseDepth编码网络部分，采用DenseNet169
+    '''
     def __init__(self):
         super(Encoder, self).__init__()
-        self.pretrained_model = DenseNet169(pretrained='./weights/DenseNet169_pretrained.pdparams')
+        self.pretrained_model = DenseNet169(pretrained='./model/DenseNet169_pretrained.pdparams')
 
     def forward(self, x):
         y, features = self.pretrained_model(x)
@@ -17,6 +35,9 @@ class Encoder(paddle.nn.Layer):
 
 
 class Decoder(paddle.nn.Layer):
+    '''
+    DenseDepth解码网络
+    '''
     def __init__(self, num_features=1664, decoder_width=1.0):
         super(Decoder, self).__init__()
         features = int(num_features * decoder_width)
@@ -40,6 +61,9 @@ class Decoder(paddle.nn.Layer):
 
 
 class UpSample(paddle.nn.Layer):
+    '''
+    上采样，采用双线性插值+卷积
+    '''
     def __init__(self, skip_input, output_features):
         super(UpSample, self).__init__()
 
@@ -54,6 +78,9 @@ class UpSample(paddle.nn.Layer):
 
 
 class DensDepthModel(paddle.nn.Layer):
+    '''
+    DenseNet169 Encoder + Bilinear interpolation Decoder
+    '''
     def __init__(self):
         super(DensDepthModel, self).__init__()
         self.encoder = Encoder()
@@ -62,14 +89,3 @@ class DensDepthModel(paddle.nn.Layer):
     def forward(self, x):
         return self.decoder(self.encoder(x))
 
-
-if __name__ == '__main__':
-    # a = Encoder()
-    inp = paddle.to_tensor(np.ones([1, 3, 224, 224], dtype=np.float32))
-    # outs = a(inp)
-    # for out in outs:
-    #    print(out.shape)
-
-    b = DensDepthModel()
-    outs = b(inp)
-    print(outs.shape)

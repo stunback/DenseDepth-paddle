@@ -1,9 +1,25 @@
+#encoding=utf8
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 from io import BytesIO
 import random
 
 import numpy as np
 import paddle
-from paddle.io import Dataset, DataLoader
+from paddle.io import Dataset
 from paddle.vision import transforms
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -18,6 +34,9 @@ def _is_numpy_image(img):
 
 
 class RandomHorizontalFlip(object):
+    '''
+    随机左右翻转
+    '''
     def __call__(self, sample):
         image, depth = sample['image'], sample['depth']
 
@@ -36,6 +55,9 @@ class RandomHorizontalFlip(object):
 
 
 class RandomChannelSwap(object):
+    '''
+    随机通道交换
+    '''
     def __init__(self, probability):
         from itertools import permutations
         self.probability = probability
@@ -52,7 +74,9 @@ class RandomChannelSwap(object):
 
 
 def loadZipToMem(zip_file):
-    # Load zip file into memory
+    '''
+    将nyu数据集 直接加载到内存中
+    '''
     print('Loading dataset zip file...', end='')
     from zipfile import ZipFile
     input_zip = ZipFile(zip_file)
@@ -72,7 +96,9 @@ def loadZipToMem(zip_file):
 
 
 def loadZipTestToMem(zip_file):
-    # Load zip file into memory
+    '''
+    将nyu数据集中的测试集 加载到内存中
+    '''
     print('Loading dataset zip file...', end='')
     from zipfile import ZipFile
     input_zip = ZipFile(zip_file)
@@ -87,6 +113,9 @@ def loadZipTestToMem(zip_file):
 
 
 class depthDatasetMemory(Dataset):
+    '''
+    将内存中的nyu数据集进行预处理，返回paddle的数据集形式
+    '''
     def __init__(self, data, nyu2_train, transform=None):
         super(depthDatasetMemory, self).__init__()
         self.data, self.nyu_dataset = data, nyu2_train
@@ -106,6 +135,9 @@ class depthDatasetMemory(Dataset):
 
 
 class ToTensor(object):
+    '''
+    将数据集中的RGB和Depth转为paddle tensor，depth需要resize并压缩到10~1000
+    '''
     def __init__(self, is_test=False):
         self.is_test = is_test
 
@@ -146,7 +178,10 @@ def getDefaultTrainTransform():
 
 
 def getTrainingTestingDataset():
-    data, nyu2_train, nyu2_test = loadZipToMem('dataset/nyu_data.zip')
+    '''
+    对nyu数据集进行预处理，获得训练和验证集
+    '''
+    data, nyu2_train, nyu2_test = loadZipToMem('data/nyu_data.zip')
 
     transformed_training = depthDatasetMemory(data, nyu2_train, transform=getDefaultTrainTransform())
     transformed_testing = depthDatasetMemory(data, nyu2_test, transform=getNoTransform())
@@ -155,7 +190,10 @@ def getTrainingTestingDataset():
 
 
 def getTestingDataset():
-    data, nyu2_test = loadZipTestToMem('dataset/nyu_data.zip')
+    '''
+    对nyu数据集进行预处理，获得验证集
+    '''
+    data, nyu2_test = loadZipTestToMem('data/nyu_data.zip')
     transformed_testing = depthDatasetMemory(data, nyu2_test, transform=getNoTransform(True))
 
     return transformed_testing

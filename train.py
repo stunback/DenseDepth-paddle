@@ -1,17 +1,34 @@
+#encoding=utf8
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+import os
 import time
 import argparse
+import configparser
 import datetime
 
 import paddle
 import paddle.nn
 import paddle.nn.utils
-import visualdl
 
 from tensorboardX import SummaryWriter
-from model import DensDepthModel
-from losses import all_loss
-from data import getTrainingTestingDataset
-from utils import AverageMeter, DepthNorm, colorize
+from data.data import getTrainingTestingDataset
+from model.model import DensDepthModel
+from utils.losses import all_loss
+from utils.utils import AverageMeter, DepthNorm
 
 
 def parse_arguments():
@@ -21,13 +38,6 @@ def parse_arguments():
     parser.add_argument('--bs', default=4, type=int, help='batch size')
     args = parser.parse_args()
     return args
-
-
-def Logging(model, writer, val_loader, epoch):
-    model.eval()
-    for batch_id, data in enumerate(val_loader):
-        depth_pred = model(data['image'])
-        depth_true = data['depth']
 
 
 def main(args):
@@ -40,6 +50,9 @@ def main(args):
     traindataset, valdataset = getTrainingTestingDataset()
     train_loader = paddle.io.DataLoader(traindataset, batch_size=bs)
     val_loader = paddle.io.DataLoader(valdataset, batch_size=bs)
+
+    if not os.path.exists('./logs'):
+        os.mkdir('./logs')
 
     prefix = 'densenet_' + str(bs)
     writer = SummaryWriter(comment='{}-lr{}-e{}-bs{}'.format(prefix, args.lr, args.epochs, args.bs), flush_secs=30)
@@ -92,8 +105,8 @@ def main(args):
 
                 if val_losses.avg < min_val_loss and epoch > 0:
                     min_val_loss = val_losses.avg
-                    paddle.save(model.state_dict(), "./logs2/DenseDepth_val_best_{}.pdparams".format(epoch))
-                    paddle.save(optimizer.state_dict(), "./logs2/Adam_val_best_{}.pdopt".format(epoch))
+                    paddle.save(model.state_dict(), "./logs/DenseDepth_val_best.pdparams")
+                    paddle.save(optimizer.state_dict(), "./logs/Adam_val_best.pdopt")
 
                 val_end = time.time()
                 print('Val Epoch: [{0}][{1}/{2}]\t'.format(epoch, i, N),
@@ -102,10 +115,16 @@ def main(args):
                 val_losses.reset()
                 model.train()
         # save
-        paddle.save(model.state_dict(), "./logs2/DenseDepth_epochs_{}.pdparams".format(epoch))
-        paddle.save(optimizer.state_dict(), "./logs2/Adam_epochs_{}.pdopt".format(epoch))
+        paddle.save(model.state_dict(), "./logs/DenseDepth_epochs_{}.pdparams".format(epoch))
+        paddle.save(optimizer.state_dict(), "./logs/Adam_epochs_{}.pdopt".format(epoch))
 
 
 if __name__ == '__main__':
     args = parse_arguments()
+    cfg = configparser.ConfigParser()
+    cfg.read('configs/main.cfg')
+    args.epochs = int(cfg.get('train', 'epochs'))
+    args.lr = float(cfg.get('train', 'learning_rate'))
+    args.bs = int(cfg.get('train', 'batch_size'))
+
     main(args)
