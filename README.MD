@@ -1,5 +1,5 @@
 # DenseDepth-paddle
-[中文说明](README_cn.MD)    
+[中文说明](README_cn.md)    
 This is a project to reproduce DenseDepth using paddlepaddle.    
 
 飞桨论文复现挑战赛（第四期）  
