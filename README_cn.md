@@ -3,7 +3,14 @@
 ## 一、简介
 DenseDepth出自论文High Quality Monocular Depth Estimation via Transfer Learning，是一个用于单目深度估计的网络。
 
-[High Quality Monocular Depth Estimation via Transfer Learning](https://github.com/ialhashim/DenseDepth.git)
+[High Quality Monocular Depth Estimation via Transfer Learning](https://github.com/ialhashim/DenseDepth.git)   
+
+![avatar](./asserts/densedepth.png)
+DenseDepth主要是通过 Densenet169 Encoder提取图像特征 + 双线性插值上采样 Decoder还原图像深度，中心思想是利用在ImageNet上训练好的backbone
+进行迁移训练，此外在训练中通过SSIM光度误差、图像梯度平滑误差和深度估值误差来约束训练方向。
+
+![avatar](./asserts/densedepth_table.png)
+densedepth在NYU depth数据集上的单目深度估计精度达到了当时的SOTA表现
 ## 二、复现精度
 | | a1 | a2 | a3 | rel | rms | log10  
 :-----:|:-----:|:-----:|:----------:|:----:|:-----:|:--------:|
@@ -22,7 +29,7 @@ paddlepaddle-gpu>=2.0
 tensorboardX
 ```
 
-训练时需要GPU RAM>=8GB（batch_size=4）   
+训练时需要GPU RAM>=9GB(batch_size=4)   RAM>=18GB(batch_size=8)
 
 测试可使用CPU  
 
@@ -128,4 +135,4 @@ train.py   # 训练文件
 应用场景| 深度估计 |
 硬件支持| CPU、GPU |
 下载链接| [DenseDepth：提取码as0z](https://pan.baidu.com/s/1f1lYptz3xVMs3mJKvVgrUw) |
-AIStudio地址| [AIStudio](尽请期待) |
+AIStudio地址| [AIStudio](https://aistudio.baidu.com/aistudio/projectdetail/2321542) |
