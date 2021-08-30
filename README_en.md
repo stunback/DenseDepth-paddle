@@ -115,7 +115,7 @@ imagedir_path = images/
 color_map = gray
 ```
 
-### 文件说明
+### Files instructions
 ```
 configs/main.cfg   # params config
 data/data.py   # dataset processing
